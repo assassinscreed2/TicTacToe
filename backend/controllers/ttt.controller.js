@@ -144,18 +144,25 @@ async function createGame(users){
 async function playGame(req,res){
     const user1 = req.body.user1;
     const user2 = req.body.user2;
+    console.log(user1+" "+user2)
+    const isuser2 = await isUserPresent(user2)
+    console.log(isuser2)
+    if(isuser2.length == 0 || user1 === user2){
+        return res.json({message:"not exist"})
+    }
+
     const pastGame = await isGamePresent({user1,user2})
     
     if(pastGame.length === 0){
         const newGame = await createGame({user1,user2})
-        return res.json({newGame})
+        return res.json({message:"exist",game:newGame})
     }
 
-    return res.json({pastGame})
+    return res.json({message:"exist",game:pastGame})
 }
 
 async function playMove(req,res){
-    // id, game, userid
+    // id, game
 
     const status = gameStatus(req.body)
     req.body.winner = status.winner
@@ -179,4 +186,4 @@ async function userGames(req,res){
 }
 
 
-module.exports = {playMove,playGame,isUserPresent,userGames,registerUser,login}
+module.exports = {playMove,playGame,userGames,registerUser,login}
